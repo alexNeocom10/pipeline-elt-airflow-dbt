@@ -9,3 +9,7 @@ airflow-webserver.pid
 webserver_config.py
 airflow.cfg
 airflow.db
+# Ignorar arquivos compilados e logs do dbt
+include/meu_dbt/target/
+include/meu_dbt/logs/
+include/meu_dbt/dbt_packages/
