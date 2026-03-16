@@ -1,0 +1,14 @@
+name: 'meu_dbt'
+version: '1.0.0'
+config-version: 2
+
+# Qual perfil de conexão ele vai usar (vamos criar no próximo passo)
+profile: 'meu_dbt'
+
+# Onde estão os arquivos SQL
+model-paths: ["models"]
+
+# Configuração padrão: tudo que criarmos no SQL vai virar uma Tabela real no banco
+models:
+  meu_dbt:
+    +materialized: table

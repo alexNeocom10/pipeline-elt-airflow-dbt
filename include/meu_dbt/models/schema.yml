@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: faturamento_diario
+    description: "Tabela agregada que mostra o faturamento total e a quantidade de produtos vendidos por dia."
+    
+    columns:
+      - name: data_venda
+        description: "A data exata em que as vendas ocorreram."
+      
+      - name: quantidade_vendas
+        description: "Contagem total de itens vendidos naquele dia."
+      
+      - name: faturamento_total
+        description: "Soma do valor financeiro de todas as vendas do dia."

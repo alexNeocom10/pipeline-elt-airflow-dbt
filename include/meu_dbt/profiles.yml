@@ -1,0 +1,12 @@
+meu_dbt:
+  outputs:
+    dev:
+      type: postgres
+      host: postgres
+      user: postgres
+      password: postgres
+      port: 5432
+      dbname: postgres
+      schema: vendas_elt # O dbt vai criar esse "departamento" no banco para nós
+      threads: 1
+  target: dev
