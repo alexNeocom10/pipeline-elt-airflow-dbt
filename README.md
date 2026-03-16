@@ -1,45 +1,37 @@
-Overview
-========
+# 🚀 Pipeline ELT Moderno: Airflow + dbt + PostgreSQL
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+![Apache Airflow](https://img.shields.io/badge/Airflow-017CEE?style=for-the-badge&logo=Apache%20Airflow&logoColor=white)
+![dbt](https://img.shields.io/badge/dbt-FF694B?style=for-the-badge&logo=dbt&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
-Project Contents
-================
+## 📌 Sobre o Projeto
+Este repositório contém uma infraestrutura completa de Engenharia de Dados local construída do zero. O objetivo deste projeto é demonstrar a orquestração e transformação de dados utilizando a **Modern Data Stack (MDS)** através de uma arquitetura ELT (Extract, Load, Transform).
 
-Your Astro project contains the following files and folders:
+Em vez de processos acoplados e manuais, este pipeline separa a orquestração (Airflow) da transformação analítica (dbt), rodando de forma conteinerizada e modular.
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+## 🏗️ Arquitetura e Fluxo de Dados
 
-Deploy Your Project Locally
-===========================
+O pipeline diário de vendas segue os seguintes passos lógicos na DAG `pipeline_vendas_dbt`:
 
-Start Airflow on your local machine by running 'astro dev start'.
+1. **Simulação de Extração (E/L):** O Airflow inicia o processo simulando a ingestão de dados brutos.
+2. **Transformação (T):** O Airflow aciona o dbt via `BashOperator` dentro de um ambiente virtual Python isolado.
+3. **Modelagem:** O dbt lê os dados, aplica regras de negócio em SQL puro e materializa a tabela final (`faturamento_diario`) diretamente no **PostgreSQL**.
+4. **Testes de Qualidade:** O Airflow aciona o comando `dbt test` para garantir a integridade e qualidade dos dados gerados.
+5. **Governança:** A linhagem de dados e o dicionário das tabelas são gerados via `dbt docs`.
 
-This command will spin up five Docker containers on your machine, each for a different Airflow component:
+## 🛠️ Desafios Técnicos Superados
 
-- Postgres: Airflow's Metadata Database
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- DAG Processor: The Airflow component responsible for parsing DAGs
-- API Server: The Airflow component responsible for serving the Airflow UI and API
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+Durante a construção deste laboratório, apliquei conceitos avançados de troubleshooting e DevOps:
+* **Resolução de Dependency Hell:** O Airflow e o dbt possuem dependências conflitantes (ex: *Jinja2*, *Pydantic*). Para resolver isso e evitar erros silenciosos, customizei o `Dockerfile` para criar um **Virtual Environment (venv) exclusivo para o dbt** dentro do container do Airflow.
+* **Gestão de Permissões no Linux:** Resolução de erros de "Permission Denied" (Exit Code 2) no dbt adequando o chmod para a escrita de logs e artefatos de compilação na pasta `target`.
+* **Containerização Local:** Uso do Astronomer CLI (Astro CLI) para levantar todo o ecossistema (Webserver, Scheduler, Postgres) via Docker.
 
-When all five containers are ready the command will open the browser to the Airflow UI at http://localhost:8080/. You should also be able to access your Postgres Database at 'localhost:5432/postgres' with username 'postgres' and password 'postgres'.
+## ⚙️ Como reproduzir este projeto na sua máquina
 
-Note: If you already have either of the above ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
+**Pré-requisitos:** Docker Desktop e [Astro CLI](https://docs.astronomer.io/astro/cli/install-cli) instalados.
 
-Deploy Your Project to Astronomer
-=================================
-
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
-
-Contact
-=======
-
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+1. Clone este repositório:
+   ```bash
+   git clone [https://github.com/alexNeocom10/pipeline-elt-airflow-dbt.git](https://github.com/alexNeocom10/pipeline-elt-airflow-dbt.git)
+   cd pipeline-elt-airflow-dbt
